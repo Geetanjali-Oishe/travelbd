@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head>
+
+    <!--<div layout:fragment="script">-->
+    <!--<script src="/initial.js"></script>-->
+    <!--</div>-->
+    <style>
+    </style>
+    <meta charset="UTF-8">
+    <title>Initial</title>
+</head>
+<body>
+<div>
+    <label for="status_text">Status:</label>
+
+    <textarea id="status_text" name="status_text" rows="4" cols="50">
+</textarea>
+
+    <!--<button class="button button2" id="profileButton" onclick="goToProfile()">Personal Profile</button>-->
+    <!--<button class="button button3" id="statusButton" onclick="goToStatus()">Status</button>-->
+</div>
+
+<script>
+    function goToStatus() {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:8080/getStatusPage");
+        request.send();
+//        document.getElementById("homeButton").innerHTML = "Hello World";
+    }</script>
+
+</body>
+
+</html>
+
+

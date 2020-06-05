@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html
+        xmlns="http://www.w3.org/1999/xhtml"
+        xmlns:th="http://www.thymeleaf.org"
+        xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+        xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+<head>
+    <!--<style>-->
+        <!--.button {-->
+            <!--background-color: #afa330; /* Green */-->
+            <!--border: none;-->
+            <!--color: white;-->
+            <!--padding: 15px 32px;-->
+            <!--text-align: center;-->
+            <!--text-decoration: none;-->
+            <!--display: inline-block;-->
+            <!--font-size: 16px;-->
+            <!--margin: 4px 2px;-->
+            <!--cursor: pointer;-->
+        <!--}-->
+
+        <!--.button2 {background-color: #81ba4a;} /* Blue */-->
+        <!--.button3 {background-color: #f45ab2;} /* Red */-->
+    <!--</style>-->
+    <!--<meta charset="UTF-8">-->
+    <!--<title>Initial</title>-->
+<!--</head>-->
+<!--<body>-->
+<!--<div>-->
+    <!--<button class="button" id="homeButton" onclick="goToHome()">Home</button>-->
+    <!--<button class="button button2" id="profileButton" onclick="goToProfile()">Personal Profile</button>-->
+    <!--<button class="button button3" id="statusButton" onclick="goToStatus()">Status</button>-->
+<!--</div>-->
+
+<!--<script>-->
+    <!--function goToStatus() {-->
+        <!--var request = new XMLHttpRequest();-->
+        <!--request.open("GET", "http://localhost:8080/getPrivacy");-->
+        <!--request.send();-->
+<!--//        document.getElementById("homeButton").innerHTML = "Hello World";-->
+    <!--}</script>-->
+
+<!--</body>-->
+
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * {box-sizing: border-box}
+
+        /* Set height of body and the document to 100% */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: Arial;
+        }
+
+        /* Style tab links */
+        .tablink {
+            background-color: #555;
+            /*color: white;*/
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            font-size: 17px;
+            width: 25%;
+        }
+
+        .tablink:hover {
+            background-color: #777;
+        }
+
+        /* Style the tab content (and add height:100% for full page content) */
+        .tabcontent {
+            /*color: white;*/
+            display: none;
+            padding: 100px 20px;
+            height: 100%;
+        }
+
+        /*#Home {background-color: red;}*/
+        /*#News {background-color: green;}*/
+        /*#Contact {background-color: blue;}*/
+    </style>
+</head>
+<body>
+
+<button class="tablink" onclick="openPage('Home', this, 'white')">Home</button>
+<button class="tablink" onclick="openPage('Profile', this, 'white')" id="defaultOpen">Personal Profile</button>
+<button class="tablink" onclick="openPage('Status', this, 'white')">Post a Status</button>
+
+<div id="Home" class="tabcontent">
+    <div id="homeContainer">
+
+    </div>
+</div>
+
+<div id="Profile" class="tabcontent">
+
+    <div id="profileContainer">
+
+    </div>
+</div>
+
+<div id="Status" class="tabcontent">
+    <label for="status_text">Status:</label>
+    <br> <br>
+    <textarea id="status_text" name="status_text" rows="4" cols="50">
+    </textarea>
+    <br>
+
+    <p>Choose privacy:</p>
+    <input type="radio" id="public" name="privacy" value="2" checked>
+    <label for="public">Public</label><br>
+    <input type="radio" id="private" name="privacy" value="3">
+    <label for="private">Private</label><br> <br> <br>
+
+
+    <label for="selectContainer">Check in:</label>
+    <br> <br>
+    <div id="selectContainer">
+
+    </div>
+    <br><br>
+
+    <button type="submit" onclick="postStatus()" class="btn">Post Status</button>
+
+</div>
+
+
+
+<script>
+    function openPage(pageName,elmnt,color) {
+        var i, tabcontent, tablinks;
+        tabcontent = document.getElementsByClassName("tabcontent");
+        for (i = 0; i < tabcontent.length; i++) {
+            tabcontent[i].style.display = "none";
+        }
+        tablinks = document.getElementsByClassName("tablink");
+        for (i = 0; i < tablinks.length; i++) {
+            tablinks[i].style.backgroundColor = "";
+        }
+        document.getElementById(pageName).style.display = "block";
+        elmnt.style.backgroundColor = color;
+
+        if (pageName == 'Status') {
+            getLocationList();
+        }
+        if (pageName == 'Profile') {
+            getOwnProfile(2);
+        }
+        if (pageName == 'Home') {
+            getHome();
+        }
+
+    }
+
+    function getLocationList() {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:8080/getLocationList");
+        request.send();
+
+        request.onload = function () {
+//            console.log(request);
+            if(request.status == 200) {
+                var resp = JSON.parse(request.response);
+
+                var select = document.createElement( 'select' );
+                var option;
+
+                resp.forEach(function( item ) {
+
+                    option = document.createElement( 'option' );
+
+                    option.value = item.id;
+                    option.textContent = item.name;
+
+                    select.appendChild( option );
+                });
+                console.log(select);
+                document.getElementById('selectContainer').innerHTML = "" ;
+                document.getElementById('selectContainer').appendChild(select) ;
+            }
+            else {
+                console.log('error ${request.status}} ${request.statusText}');
+            }
+        }
+    }
+
+    function postStatus() {
+        if (document.getElementById('public').checked) {
+            var privacyVal = document.getElementById('public').value;
+        }
+        else {
+            var privacyVal = document.getElementById('private').value;
+        }
+        var data = {
+            "statusId":"-1",
+            "status":document.getElementById('status_text').value,
+            "privacyId":privacyVal,
+            "locationId":document.getElementsByTagName('select')[0].value,
+            "userId":"2"
+        }
+        console.log(data);
+
+
+
+
+
+        var request = new XMLHttpRequest();
+        request.open("POST", "http://localhost:8080/postStatus");
+        request.send(data);
+
+        request.onload = function () {
+//            console.log(request);
+            if(request.status == 200) {
+                var resp = JSON.parse(request.response);
+
+                console.log(resp);
+            }
+            else {
+                console.log('error ${request.status}} ${request.statusText}');
+            }
+        }
+
+
+
+
+
+
+
+    };
+    
+    function getOwnProfile(userId) {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:8080/getProfile/" + userId);
+        request.send();
+
+        request.onload = function () {
+            console.log(request);
+            if(request.status == 200) {
+                var resp = JSON.parse(request.response);
+
+                var div = document.createElement( 'div' );
+                div.id = "outerDiv";
+                var option;
+
+                resp.forEach(function( item ) {
+
+                    option = document.createElement( 'div' );
+                    option.class = "statusDiv";
+
+                    var user = document.createElement("span");
+                    user.textContent = item.userName +" wrote: ";
+
+                    var lineBreak = document.createElement("br");
+                    var lineBreak2 = document.createElement("br");
+                    var lineBreak3 = document.createElement("br");
+
+                    var status = document.createElement("span");
+                    status.textContent = item.statusText;
+
+                    var location = document.createElement("span");
+                    location.textContent = "at " + item.locationName;
+
+                    var dash = document.createElement("span");
+                    dash.textContent = "------------------------------------------------------------------------------------------";
+
+//                    option.textContent = item.userName + " wrote:   " + item.statusText + " at " + item.locationName;
+
+                    option.appendChild(user);
+                    option.appendChild(lineBreak);
+                    option.appendChild(status);
+                    option.appendChild(lineBreak2);
+                    option.appendChild(location);
+                    option.appendChild(lineBreak3);
+                    option.appendChild(dash);
+                    div.appendChild( option );
+                });
+                console.log(div);
+                document.getElementById('profileContainer').innerHTML = "" ;
+                document.getElementById('profileContainer').appendChild(div) ;
+            }
+            else {
+                console.log('error ${request.status}} ${request.statusText}');
+            }
+        }
+    }
+
+    function getHome() {
+        var request = new XMLHttpRequest();
+        request.open("GET", "http://localhost:8080/getAllPublic");
+        request.send();
+
+        request.onload = function () {
+            console.log(request);
+            if(request.status == 200) {
+                var resp = JSON.parse(request.response);
+
+                var div = document.createElement( 'div' );
+                div.id = "outerDiv";
+                var option;
+
+                resp.forEach(function( item ) {
+
+                    option = document.createElement( 'div' );
+                    option.class = "homeDiv";
+
+                    var user = document.createElement("span");
+                    user.textContent = item.userName +" wrote: ";
+
+                    var lineBreak = document.createElement("br");
+                    var lineBreak2 = document.createElement("br");
+                    var lineBreak3 = document.createElement("br");
+
+                    var status = document.createElement("span");
+                    status.textContent = item.statusText;
+
+                    var location = document.createElement("span");
+                    location.textContent = "at " + item.locationName;
+
+                    var dash = document.createElement("span");
+                    dash.textContent = "------------------------------------------------------------------------------------------";
+
+//                    option.textContent = item.userName + " wrote:   " + item.statusText + " at " + item.locationName;
+
+                    option.appendChild(user);
+                    option.appendChild(lineBreak);
+                    option.appendChild(status);
+                    option.appendChild(lineBreak2);
+                    option.appendChild(location);
+                    option.appendChild(lineBreak3);
+                    option.appendChild(dash);
+                    div.appendChild( option );
+                });
+                console.log(div);
+                document.getElementById('homeContainer').innerHTML = "" ;
+                document.getElementById('homeContainer').appendChild(div) ;
+            }
+            else {
+                console.log('error ${request.status}} ${request.statusText}');
+            }
+        }
+    }
+
+    // Get the element with id="defaultOpen" and click on it
+    document.getElementById("defaultOpen").click();
+</script>
+
+</body>
+
+</html>
+
+

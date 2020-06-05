@@ -83,3 +83,7 @@ ALTER TABLE public.status
 *There are three tabs. Tab 1 shows all the publicly posted statuses. 
 *Tab 2 shows only user specific status (for now the user id has been kept 2 as static)
 *Tab 3 gives the option to post a new status(It shows a textarea for status, Radio buttons for public private status (public 2 private 3) and dropdown for the places.)
+
+** For the APIs **
+
+purpose, request and response example is added with each API for better understanding

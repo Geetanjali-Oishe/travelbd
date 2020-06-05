@@ -22,14 +22,18 @@ public class StatusController {
     @Autowired
     StatusService statusService;
 
-    //    Go to the status page
-    @GetMapping("/getStatusPage")
-    public String getStatusPage()
-    {
-        return "new_status";
-    }
-
     //    API to get the privacy options
+    //    request url example: http://localhost:8080/getPrivacy
+    //    response example: [
+    //    {
+    //        "id": 2,
+    //            "name": "Public"
+    //    },
+    //    {
+    //        "id": 3,
+    //            "name": "Private"
+    //    }
+    //]
     @GetMapping("/getPrivacy")
     @ResponseBody
     public List<Privacy> getPrivacy()
@@ -39,6 +43,25 @@ public class StatusController {
 
 
     //    API to get the list of locations
+    //    request example: http://localhost:8080/getLocationList
+    //    response example:
+    //            [
+    //    {
+    //        "id": 1,
+    //            "name": "Coxs Bazar"
+    //    },
+    //    {
+    //        "id": 2,
+    //            "name": "Dhaka"
+    //    },
+    //    {
+    //        "id": 3,
+    //            "name": "Chittagong"
+    //    },
+    //    {
+    //        "id": 4,
+    //            "name": "Khulna"
+    //    }}
     @GetMapping("/getLocationList")
     @ResponseBody
     public List<Location> getLocations() {
@@ -47,6 +70,15 @@ public class StatusController {
 
 
     //    API to post a status
+    //    request url example:http://localhost:8080/postStatus
+    //    request body example: {
+    //        "statusId":"14",
+    //                "status":"test status",
+    //                "privacyId":"3",
+    //                "locationId":"4",
+    //                "userId":"3"
+    //    }
+
     @RequestMapping(value = "/postStatus", method = RequestMethod.POST)
     @ResponseBody
     public ResponseEntity<StatusDto> postStatus(@RequestBody StatusDto statusDto)
@@ -55,10 +87,17 @@ public class StatusController {
         return new ResponseEntity<StatusDto>(statusDto, HttpStatus.OK);
     }
 
-    //    API to get the privacy options
+    //    API to get the initial page after login
     @GetMapping("/initial")
     public String getInitialView()
     {
         return "initial";
+    }
+
+    //    Go to the status page
+    @GetMapping("/getStatusPage")
+    public String getStatusPage()
+    {
+        return "new_status";
     }
 }
